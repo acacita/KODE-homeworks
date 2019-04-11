@@ -1,0 +1,7 @@
+Django==2.1.7
+python-dotenv==0.10.1
+psycopg2-binary==2.8.1
+djangorestframework==3.9.2
+redis==3.2.1
+django_redis==4.10.0
+requests==2.21.0
