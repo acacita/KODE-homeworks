@@ -1,12 +1,15 @@
 import logging
 import os
 import sys
+import datetime
+
+import django
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 SECRET_KEY = 't2lqmz!73beh_de106_q223gt=())x^if%p3+7r-dka&8a!nsj'
 
-DEBUG = bool(os.environ.get('DEBUG', 1))
+DEBUG = True
 
 ALLOWED_HOSTS = [
     '*',
@@ -19,9 +22,12 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'django.contrib.sites',
     'rest_framework',
+    'jwt',
     'api',
     'models',
+
 ]
 
 MIDDLEWARE = [
@@ -46,8 +52,6 @@ DATABASES = {
         'PORT': '5432'
     }
 }
-
-
 
 TEMPLATES = [
     {
@@ -108,7 +112,6 @@ USE_L10N = True
 
 USE_TZ = True
 
-
 STATICFILES_DIRS = [
     os.path.join(BASE_DIR, 'static'),
 ]
@@ -117,9 +120,32 @@ STATIC_URL = '/static/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'uploads')
 MEDIA_URL = '/upload/'
 
-
 HOST_IP_ADDRESS = os.environ.get('HOST_IP_ADDRESS', '0.0.0.0')
 
 API_KEY = 'AIzaSyB0JNTrEhvtwALjuc68NGxXCKMfiBJRVTs'
 API_URL = 'https://speech.googleapis.com/v1/speech:recognize?key={}'.format(API_KEY)
 API_LANGUAGE_CODE = 'ru-RU'
+
+PUBLIC_KEY = open('public.pem').read()
+PRIVATE_KEY = os.environ.get('PRIVATE_KEY')
+
+JWT_AUTH = {
+    'JWT_PUBLIC_KEY': PUBLIC_KEY,
+    'JWT_PRIVATE_KEY': PRIVATE_KEY,
+
+    'JWT_VERIFY': True,
+    'JWT_VERIFY_EXPIRATION': True,
+    'JWT_ALGORITHM': 'RS256',
+    'JWT_EXPIRATION_DELTA': datetime.timedelta(seconds=3000),
+    'JWT_AUTH_HEADER_PREFIX': 'Bearer',
+
+}
+
+REST_FRAMEWORK = {
+    'DEFAULT_PERMISSION_CLASSES': [
+        'rest_framework.permissions.IsAuthenticated',
+    ],
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework.authentication.TokenAuthentication',
+    )
+}
