@@ -1,7 +1,7 @@
 from __future__ import unicode_literals
 from django.db import models
 from django.utils import timezone
-from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin
+from django.contrib.auth.models import AbstractBaseUser
 import uuid
 
 
@@ -9,7 +9,7 @@ class UserManager(models.Manager):
     def _create_user(self, username, password, email, **kwargs):
         username = self.normalize_username(username)
         email = self.normalize_email(email)
-        user = self.model(username=username, email = email, **kwargs)
+        user = self.model(username=username, email=email, **kwargs)
         user.set_password(password)
         user.save(using=self._db)
         return user
@@ -27,7 +27,7 @@ class UserManager(models.Manager):
 
 class User(AbstractBaseUser):
     user_id = models.CharField(max_length=128, default=uuid.uuid4, primary_key=True)
-    username =  models.CharField(max_length=128, unique=True)
+    username = models.CharField(max_length=128, unique=True)
     email = models.EmailField(max_length=40)
     first_name = models.CharField(max_length=30, blank=True)
     last_name = models.CharField(max_length=30, blank=True)
@@ -50,7 +50,8 @@ class Message(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     created_at = models.DateTimeField(default=timezone.now)
 
+
 class Subscribers(models.Model):
     user_id = models.ForeignKey(User, related_name='+', on_delete=models.CASCADE)
-    follower_id =  models.ForeignKey(User, on_delete=models.CASCADE)
+    follower_id = models.ForeignKey(User, on_delete=models.CASCADE)
     created_at = models.DateTimeField(default=timezone.now)
