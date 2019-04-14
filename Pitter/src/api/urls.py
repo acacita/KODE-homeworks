@@ -2,7 +2,7 @@ from django.urls import path
 
 from .views.users import CreateUserAPIView
 from .views.obtaintoken import JWTView
-from .views.authorize import GetPublicKeyView, CheckAccess
+from .views.accsess_views import GetPublicKeyView, CheckAccess
 
 urlpatterns = [
     path('create/', CreateUserAPIView.as_view()),

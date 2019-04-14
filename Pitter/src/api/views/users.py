@@ -1,10 +1,12 @@
 from rest_framework.views import APIView
 from rest_framework.response import Response
+from models.app_models import User
 from models.serializers import UserSerializer
-from models.models import User
+from rest_framework.permissions import AllowAny
 
 
 class CreateUserAPIView(APIView):
+    permission_classes = (AllowAny,)
 
     def post(self, request):
         user = request.data
