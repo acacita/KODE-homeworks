@@ -5,3 +5,4 @@ djangorestframework==3.9.2
 redis==3.2.1
 django_redis==4.10.0
 requests==2.21.0
+djangorestframework-jwt==1.11.0
