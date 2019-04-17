@@ -3,6 +3,7 @@ from django.db import models
 from django.utils import timezone
 from django.contrib.auth.models import AbstractBaseUser
 import uuid
+from django.core.exceptions import ValidationError
 
 
 class UserManager(models.Manager):
@@ -19,7 +20,6 @@ class UserManager(models.Manager):
 
     def delete_user(self, user, raw_password, **kwargs):
         check = user.check_password(raw_password, **kwargs)
-
         if check:
             user.delete()
             return check
@@ -34,7 +34,11 @@ class User(AbstractBaseUser):
     password = models.CharField('password', max_length=128)
     date_joined = models.DateTimeField(default=timezone.now)
 
+    following_relation = models.ManyToManyField('self', through='Subscribers', symmetrical=False)
+
     objects = UserManager()
+
+    USERNAME_FIELD = 'username'
 
     def save(self, *args, **kwargs):
         super(User, self).save(*args, **kwargs)
@@ -42,6 +46,29 @@ class User(AbstractBaseUser):
 
     def delete(self, *args, **kwargs):
         super(User, self).delete(*args, **kwargs)
+
+    def add_subscriber(self, person):  # todo change order
+        if self != person:
+            subscription, created = Subscribers.objects.get_or_create(
+                from_person=self,
+                to_person=person)
+            return subscription
+        else:
+            raise ValidationError("You can not follow yourself")
+
+    def del_subscription(self, person):
+        Subscribers.objects.filter(
+            user_id=self,
+            follower_id=person).delete()
+        return
+
+    def get_connections(self):
+        connections = Subscribers.objects.filter(user_id=self)
+        return connections
+
+    # def get_followers(self): #users the user is following
+    #     followers = Subscribers.objects.filter(following=self.user)
+    #     return followers
 
 
 class Message(models.Model):
@@ -52,6 +79,15 @@ class Message(models.Model):
 
 
 class Subscribers(models.Model):
-    user_id = models.ForeignKey(User, related_name='+', on_delete=models.CASCADE)
-    follower_id = models.ForeignKey(User, on_delete=models.CASCADE)
+    user_id = models.ForeignKey(User, related_name='whofollows', on_delete=models.CASCADE)
+    follower_id = models.ForeignKey(User, related_name='whomfollows', on_delete=models.CASCADE)
+
     created_at = models.DateTimeField(default=timezone.now)
+
+    def __str__(self):
+        return 'User {} follows {}'.format(self.user_id, self.follower_id)
+
+    # def save(self, *args, **kwargs):
+    #     if self.user_id == self.user_id:
+    #         raise ValidationError("You can not follow yourself.")
+    #     super(Subscribers, self).save(*args, **kwargs)
