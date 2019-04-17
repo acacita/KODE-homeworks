@@ -1,12 +1,12 @@
 from rest_framework.views import APIView
 from rest_framework.response import Response
+
 from models.user_models import User, Subscribers
 from models.user_serializers import UserSerializer
 from rest_framework.permissions import AllowAny
 from rest_framework.exceptions import APIException
 from django.core.exceptions import ValidationError
-# from ..tasks import send_verification_email
-
+from ..tasks import send_verification_email
 
 class CreateUserAPIView(APIView):
     permission_classes = (AllowAny,)
@@ -49,7 +49,7 @@ class FollowUser(APIView):
             follow = Subscribers.objects.create(user_id=user_id, follower_id=follower)
             follow.save()
             dets = {'message': 'User {} successfully subscribed to user {}'.format(str(me), str(pk))}
-            # send_verification_email.delay(me, pk)
+            send_verification_email.delay(me, pk)
             return Response(dets)
 
     def delete(self, request, me, pk):
@@ -68,6 +68,6 @@ class GetFollowersList(APIView):
 
     def get(self, request, person):
         user = User.objects.get(username=person)
-        data = user.get_connections()
-        print(data)  # todo serialize this
-        return Response(status=200)
+        data = str(user.get_connections())
+        #todo serialize this
+        return Response(data, status=200)
