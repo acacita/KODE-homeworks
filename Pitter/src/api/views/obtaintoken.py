@@ -1,7 +1,8 @@
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.permissions import AllowAny
-from models.app_models import User
+from models.user_models import User
+import jwt
 from rest_framework_jwt.settings import api_settings
 
 

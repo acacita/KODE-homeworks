@@ -74,8 +74,15 @@ WSGI_APPLICATION = 'wsgi.application'
 CACHE_DEFAULT_TIMEOUT = 60
 
 REDIS_HOST = os.environ.get('REDIS_HOST', '0.0.0.0')
-REDIS_PORT = int(os.environ.get('REDIS_HOST', '6379'))
-REDIS_DB = 1
+# REDIS_PORT = int(os.environ.get('REDIS_HOST', '6379'))
+# REDIS_DB = 1
+CELERY_BROKER_TRANSPORT = 'redis'
+CELERY_BROKER_URL = 'redis://localhost:6379'
+CELERY_RESULT_BACKEND = 'redis://localhost:6379'
+CELERY_TIMEZONE = 'UTC'
+CELERY_ACCEPT_CONTENT = ['application/json']
+CELERY_TASK_SERIALIZER = 'json'
+CELERY_RESULT_SERIALIZER = 'json'
 
 CACHES = {
     'default': {
@@ -149,3 +156,9 @@ REST_FRAMEWORK = {
         'rest_framework.authentication.TokenAuthentication',
     )
 }
+
+EMAIL_USE_SSL = True
+EMAIL_HOST = 'smtp.mail.ru'
+EMAIL_PORT = 465
+EMAIL_HOST_USER = "test-subscription@mail.ru"
+PASSWORD = "Previous_1347"
