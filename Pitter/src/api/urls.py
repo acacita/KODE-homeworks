@@ -11,6 +11,6 @@ urlpatterns = [
     path('secret_key/', GetPublicKeyView.as_view()),
     path('authorize/', CheckAccess.as_view()),
     path('subscribe/<slug:me>/<slug:pk>/', FollowUser.as_view()),
-    path('subscribe/<slug:person>', GetFollowersList.as_view()),
+    path('list/<slug:person>', GetFollowersList.as_view()),
     path('search/<slug:person>', UserSearch.as_view())
 ]
