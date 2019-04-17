@@ -5,6 +5,7 @@ from models.user_serializers import UserSerializer, FollowSerializer
 from rest_framework.permissions import AllowAny
 from rest_framework.exceptions import APIException
 from django.core.exceptions import ValidationError
+from ..tasks import send_verification_email
 import json
 
 
@@ -49,6 +50,7 @@ class FollowUser(APIView):
             follow = Subscribers.objects.create(user_id=user_id, follower_id=follower)
             follow.save()
             dets = {'message': 'User {} successfully subscribed to user {}'.format(str(me), str(pk))}
+            send_verification_email.delay(me, pk)
             return Response(dets)
 
     def delete(self, request, me, pk):
