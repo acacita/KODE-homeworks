@@ -5,6 +5,8 @@ import datetime
 
 import django
 
+os.environ.setdefault("DJANGO_SETTINGS_MODULE", "settings")
+
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 SECRET_KEY = 't2lqmz!73beh_de106_q223gt=())x^if%p3+7r-dka&8a!nsj'
@@ -26,7 +28,6 @@ INSTALLED_APPS = [
     'rest_framework',
     'jwt',
     'api',
-    'models',
 
 ]
 
@@ -34,7 +35,7 @@ MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
-    # 'django.middleware.csrf.CsrfViewMiddleware',
+    'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
@@ -46,12 +47,14 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
         'NAME': 'postgres',
-        'USER': 'djprojectuser',
+        'USER': 'postgres',
         'PASSWORD': 'postgres',
-        'HOST': 'localhost',
-        'PORT': '5432'
+        'HOST': 'postgres',
+        'PORT': '5432',
     }
 }
+
+CELERY_BROKER_URL = "amqp://rabbitmq"
 
 TEMPLATES = [
     {
@@ -72,17 +75,6 @@ TEMPLATES = [
 WSGI_APPLICATION = 'wsgi.application'
 
 CACHE_DEFAULT_TIMEOUT = 60
-
-REDIS_HOST = os.environ.get('REDIS_HOST', '0.0.0.0')
-# REDIS_PORT = int(os.environ.get('REDIS_HOST', '6379'))
-# REDIS_DB = 1
-CELERY_BROKER_TRANSPORT = 'redis'
-CELERY_BROKER_URL = 'redis://localhost:6379'
-CELERY_RESULT_BACKEND = 'redis://localhost:6379'
-CELERY_TIMEZONE = 'UTC'
-CELERY_ACCEPT_CONTENT = ['application/json']
-CELERY_TASK_SERIALIZER = 'json'
-CELERY_RESULT_SERIALIZER = 'json'
 
 CACHES = {
     'default': {
