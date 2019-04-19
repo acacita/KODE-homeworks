@@ -11,8 +11,3 @@ class Subscribers(models.Model):
 
     def __str__(self):
         return 'User {} follows {}'.format(self.user_id, self.follower_id)
-
-    # def save(self, *args, **kwargs):
-    #     if self.user_id == self.user_id:
-    #         raise ValidationError("You can not follow yourself.")
-    #     super(Subscribers, self).save(*args, **kwargs)
