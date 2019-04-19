@@ -1,6 +1,7 @@
 from django.urls import path
 
-from .views.users import CreateUserAPIView, FollowUser, GetFollowersList
+from .views.users import CreateUserAPIView
+from .views.subscribers import  FollowUser, GetFollowersList
 from .views.obtaintoken import JWTView
 from .views.authorize import GetPublicKeyView, CheckAccess
 from .views.search import UserSearch

@@ -1,15 +1,16 @@
 from __future__ import absolute_import, unicode_literals
-import logging
+from celery import shared_task
+from ..models.user_models import User
 from django.core.mail import send_mail
-from src.celery import app
-from models.user_models import User
 from settings import EMAIL_HOST_USER
+import logging
 
 
-@app.task
-def send_verification_email(user_id, subscribers_id):
+@shared_task()
+def post_signup_welcome_email(user_id=None, subscribers_id=None):
     try:
-        user = User.objects.get(user_id=user_id)
+        user = User.objects.get(username=user_id)
+
         send_mail(
             'Subscription notification',
             'You are now subscribed to {}'.format(subscribers_id),
