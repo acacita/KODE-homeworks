@@ -18,4 +18,3 @@ urlpatterns = [
     path('create_pitt/', CreatePitt.as_view())
 
 ]
-s
