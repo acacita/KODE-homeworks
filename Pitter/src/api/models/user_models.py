@@ -4,7 +4,6 @@ from django.utils import timezone
 from django.contrib.auth.models import AbstractBaseUser
 import uuid
 from django.core.exceptions import ValidationError
-from .subscriber_model import Subscribers
 
 
 class UserManager(models.Manager):
@@ -49,25 +48,31 @@ class User(AbstractBaseUser):
     def delete(self, *args, **kwargs):
         super(User, self).delete(*args, **kwargs)
 
-    def add_subscriber(self, person):  # todo change order
+    def add_relationship(self, person):
         if self != person:
-            subscription, created = Subscribers.objects.get_or_create(
+            relationship, created = User.objects.get_or_create(
                 from_person=self,
                 to_person=person)
-            return subscription
+            return relationship
         else:
             raise ValidationError("You can not follow yourself")
 
-    def del_subscription(self, person):
-        Subscribers.objects.filter(
-            user_id=self,
-            follower_id=person).delete()
+    def remove_relationship(self, person):
+        User.objects.filter(
+            from_person=self,
+            to_person=person).delete()
         return
 
-    def get_connections(self):
-        connections = Subscribers.objects.filter(user_id=self)
-        return connections
+    def get_relationships(self):
+        return self.following_relation.filter(
+            whomfollows__user_id=self)
 
-    # def get_followers(self): #users the user is following
-    #     followers = Subscribers.objects.filter(following=self.user)
-    #     return followers
+    def get_related_to(self):
+        return self.following_relation.filter(
+            whofollows__follower_id=self)
+
+    def get_connections(self):
+        return self.get_relationships()
+
+    def get_followers(self):
+        return self.get_related_to()
