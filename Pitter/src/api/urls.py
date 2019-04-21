@@ -1,10 +1,11 @@
 from django.urls import path
 
-from .views.users import CreateUserAPIView
-from .views.subscribers import  FollowUser, GetFollowersList
-from .views.obtaintoken import JWTView
-from .views.authorize import GetPublicKeyView, CheckAccess
-from .views.search import UserSearch
+from .views import CreateUserAPIView
+from .views import FollowUser, GetFollowersList
+from .views import JWTView
+from .views import GetPublicKeyView, CheckAccess
+from .views import UserSearch
+from .views import CreatePitt
 
 urlpatterns = [
     path('create/', CreateUserAPIView.as_view()),
@@ -13,5 +14,8 @@ urlpatterns = [
     path('authorize/', CheckAccess.as_view()),
     path('subscribe/<slug:me>/<slug:pk>/', FollowUser.as_view()),
     path('list/<slug:person>', GetFollowersList.as_view()),
-    path('search/<slug:person>', UserSearch.as_view())
+    path('search/<slug:person>', UserSearch.as_view()),
+    path('create_pitt/', CreatePitt.as_view())
+
 ]
+s
