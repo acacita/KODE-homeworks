@@ -1,13 +1,14 @@
 from rest_framework.views import APIView
 from rest_framework.response import Response
 
-from ..models.user_models import User, Subscribers
+from ..models.user_models import User
 from ..models.user_serializers import UserSerializer
 from rest_framework.permissions import AllowAny
-from ..templates.tasks import post_signup_welcome_email
+from django.core.exceptions import ObjectDoesNotExist
 
 
 class CreateUserAPIView(APIView):
+    #todo authorize
     permission_classes = (AllowAny,)
 
     def post(self, request):
@@ -29,7 +30,7 @@ class CreateUserAPIView(APIView):
             user = User.objects.get(username=username)
             user.delete()
             return Response({"message": "User successfully deleted!"}, status=200)
-        except Exception as e:
-            return Response({"message": "Something went wrong, please check your input"}, status=400)
+        except ObjectDoesNotExist:
+            return Response({"error": "This user does not exist"}, status=400)
 
 
