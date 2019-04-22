@@ -114,11 +114,12 @@ USE_TZ = True
 STATICFILES_DIRS = [
     os.path.join(BASE_DIR, 'static'),
 ]
-
 STATIC_URL = '/static/'
-MEDIA_ROOT = os.path.join(BASE_DIR, 'uploads')
-MEDIA_URL = '/upload/'
+# MEDIA_ROOT = os.path.join(BASE_DIR, 'uploads')
+MEDIA_URL = 'http://0.0.0.0:8000/media/'
 
+print(BASE_DIR)
+# print(MEDIA_ROOT)
 HOST_IP_ADDRESS = os.environ.get('HOST_IP_ADDRESS', '0.0.0.0')
 
 API_KEY = 'AIzaSyB0JNTrEhvtwALjuc68NGxXCKMfiBJRVTs'
