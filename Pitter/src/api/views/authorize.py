@@ -4,7 +4,7 @@ from rest_framework.response import Response
 
 from rest_framework_jwt.settings import api_settings
 #
-from rest_framework.authentication import get_authorization_header, BaseAuthentication
+from rest_framework.authentication import get_authorization_header
 
 from rest_framework.permissions import AllowAny
 from rest_framework.permissions import IsAuthenticated

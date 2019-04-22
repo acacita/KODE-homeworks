@@ -18,6 +18,7 @@ class UserManager(models.Manager):
     def create_user(self, username, password, **kwargs):
         return self._create_user(username, password, **kwargs)
 
+    @staticmethod
     def delete_user(self, user, raw_password, **kwargs):
         check = user.check_password(raw_password, **kwargs)
         if check:
@@ -47,36 +48,34 @@ class User(AbstractBaseUser):
     def delete(self, *args, **kwargs):
         super(User, self).delete(*args, **kwargs)
 
-    def add_subscriber(self, person):  # todo change order
+    def add_relationship(self, person):
         if self != person:
-            subscription, created = Subscribers.objects.get_or_create(
+            relationship, created = User.objects.get_or_create(
                 from_person=self,
                 to_person=person)
-            return subscription
+            return relationship
         else:
             raise ValidationError("You can not follow yourself")
 
-    def del_subscription(self, person):
-        Subscribers.objects.filter(
-            user_id=self,
-            follower_id=person).delete()
+    def remove_relationship(self, person):
+        User.objects.filter(
+            from_person=self,
+            to_person=person).delete()
         return
 
+    def get_relationships(self):
+        return self.following_relation.filter(
+            whomfollows__user_id=self)
+
+    def get_related_to(self):
+        return self.following_relation.filter(
+            whofollows__follower_id=self)
+
     def get_connections(self):
-        connections = Subscribers.objects.filter(user_id=self)
-        return connections
+        return self.get_relationships()
 
-    # def get_followers(self): #users the user is following
-    #     followers = Subscribers.objects.filter(following=self.user)
-    #     return followers
-
-
-class Message(models.Model):
-    audio_content = models.FileField(upload_to='uploads/')
-    text_content = models.TextField(max_length=500)
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
-    created_at = models.DateTimeField(default=timezone.now)
-
+    def get_followers(self):
+        return self.get_related_to()
 
 class Subscribers(models.Model):
     user_id = models.ForeignKey(User, related_name='whofollows', on_delete=models.CASCADE)
@@ -86,8 +85,3 @@ class Subscribers(models.Model):
 
     def __str__(self):
         return 'User {} follows {}'.format(self.user_id, self.follower_id)
-
-    # def save(self, *args, **kwargs):
-    #     if self.user_id == self.user_id:
-    #         raise ValidationError("You can not follow yourself.")
-    #     super(Subscribers, self).save(*args, **kwargs)

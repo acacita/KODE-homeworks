@@ -5,7 +5,7 @@ from .user_models import User, Subscribers
 class UserSerializer(serializers.ModelSerializer):
     class Meta(object):
         model = User
-        fields = ('username', 'email', 'first_name', 'last_name', 'password')
+        fields = ('username', 'email', 'first_name', 'last_name')
         extra_field = {'password': {'write_only': True}}
 
 
