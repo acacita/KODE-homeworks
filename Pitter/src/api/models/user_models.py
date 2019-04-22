@@ -76,3 +76,12 @@ class User(AbstractBaseUser):
 
     def get_followers(self):
         return self.get_related_to()
+
+class Subscribers(models.Model):
+    user_id = models.ForeignKey(User, related_name='whofollows', on_delete=models.CASCADE)
+    follower_id = models.ForeignKey(User, related_name='whomfollows', on_delete=models.CASCADE)
+
+    created_at = models.DateTimeField(default=timezone.now)
+
+    def __str__(self):
+        return 'User {} follows {}'.format(self.user_id, self.follower_id)
