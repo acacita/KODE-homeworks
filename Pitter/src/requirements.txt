@@ -7,3 +7,5 @@ django_redis==4.10.0
 requests==2.21.0
 djangorestframework-jwt==1.11.0
 celery>=4.2,<4.3
+flake8==3.7.7
+cryptography==2.6.1
