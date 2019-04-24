@@ -29,5 +29,8 @@ class UserList(APIView):
 
     def get(self, request):
         query = User.objects.all()
-        data = UserSerializer(query, many=True)
-        return Response(data.data)
+        if query:
+            data = UserSerializer(query, many=True)
+            return Response(data.data)
+        else:
+            return Response("Not found")
