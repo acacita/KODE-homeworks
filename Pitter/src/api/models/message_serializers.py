@@ -10,3 +10,14 @@ class PublicationSerializer(serializers.ModelSerializer):
     class Meta:
         model = Pitt
         fields = ('id', 'user', 'audio_content', 'text_content', 'created_at')
+
+
+class ManyPittsSerializer(serializers.ModelSerializer):
+    audio_content = serializers.FileField(read_only=True)
+
+    class Meta:
+        model = Pitt
+        fields = ('id', 'audio_content', 'text_content', 'created_at')
+        extra_kwargs = {
+            'user': {'read_only': True}
+        }

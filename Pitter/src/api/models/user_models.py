@@ -1,5 +1,5 @@
 from __future__ import unicode_literals
-from django.db import models
+from django.db import models, transaction
 from django.utils import timezone
 from django.contrib.auth.models import AbstractBaseUser
 import uuid
@@ -8,12 +8,16 @@ from django.core.exceptions import ValidationError
 
 class UserManager(models.Manager):
     def _create_user(self, username, password, email, **kwargs):
-        username = self.normalize_username(username)
-        email = self.normalize_email(email)
-        user = self.model(username=username, email=email, **kwargs)
-        user.set_password(password)
-        user.save(using=self._db)
-        return user
+        if not username:
+            raise ValueError("Username must be provided")
+
+        with transaction.atomic():
+            username = self.normalize_username(username)
+            email = self.normalize_email(email)
+            user = self.model(username=username, email=email, **kwargs)
+            user.set_password(password)
+            user.save(using=self._db)
+            return user
 
     def create_user(self, username, password, **kwargs):
         return self._create_user(username, password, **kwargs)
@@ -25,6 +29,9 @@ class UserManager(models.Manager):
             user.delete()
             return check
 
+    def get_by_natural_key(self, username):
+        return self.get(username=username)
+
 
 class User(AbstractBaseUser):
     user_id = models.CharField(max_length=128, default=uuid.uuid4, primary_key=True)
@@ -32,7 +39,6 @@ class User(AbstractBaseUser):
     email = models.EmailField(max_length=40)
     first_name = models.CharField(max_length=30, blank=True)
     last_name = models.CharField(max_length=30, blank=True)
-    password = models.CharField('password', max_length=128)
     date_joined = models.DateTimeField(default=timezone.now)
 
     following_relation = models.ManyToManyField('self', through='Subscribers', symmetrical=False)
@@ -76,6 +82,7 @@ class User(AbstractBaseUser):
 
     def get_followers(self):
         return self.get_related_to()
+
 
 class Subscribers(models.Model):
     user_id = models.ForeignKey(User, related_name='whofollows', on_delete=models.CASCADE)

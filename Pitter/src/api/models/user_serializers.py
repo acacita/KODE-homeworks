@@ -1,16 +1,13 @@
 from rest_framework import serializers
-from .user_models import User, Subscribers
+from .user_models import User
 
 
 class UserSerializer(serializers.ModelSerializer):
+    date_joined = serializers.ReadOnlyField()
+
     class Meta(object):
         model = User
-        fields = ('username', 'email', 'first_name', 'last_name')
-        extra_field = {'password': {'write_only': True}}
-
-
-class FollowSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Subscribers
-        fields = '__all__'
-        read_only_fields = ('user_id',)
+        fields = ('user_id', 'username', 'email', 'first_name', 'last_name', 'date_joined', 'password')
+        extra_kwargs = {
+            'password': {'write_only': True}
+        }
