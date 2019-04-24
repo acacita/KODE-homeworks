@@ -122,7 +122,7 @@ API_KEY = 'AIzaSyB0JNTrEhvtwALjuc68NGxXCKMfiBJRVTs'
 API_URL = 'https://speech.googleapis.com/v1/speech:recognize?key={}'.format(API_KEY)
 API_LANGUAGE_CODE = 'ru-RU'
 
-#todo bring back enviroment variable after i stop being lazy
+# todo bring back enviroment variable after i stop being lazy
 PUBLIC_KEY = open('public.pem').read()
 PRIVATE_KEY = open('private.pem').read()
 # PRIVATE_KEY = os.environ.get('PRIVATE_KEY')
@@ -133,10 +133,9 @@ JWT_AUTH = {
     'JWT_VERIFY': True,
     'JWT_VERIFY_EXPIRATION': True,
     'JWT_ALGORITHM': 'RS256',
-    'JWT_EXPIRATION_DELTA': datetime.timedelta(seconds=3000),
+    'JWT_EXPIRATION_DELTA': datetime.timedelta(seconds=6000),
     'JWT_AUTH_HEADER_PREFIX': 'Bearer',
 }
-
 
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
