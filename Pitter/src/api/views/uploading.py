@@ -7,6 +7,7 @@ from ..models.message_serializers import PublicationSerializer
 from ..models.user_serializers import UserSerializer
 from rest_framework.permissions import IsAuthenticated
 from django.core.exceptions import ObjectDoesNotExist
+from ..templates.tasks import send_pitt_notification
 
 
 class CreatePitt(APIView):
@@ -24,6 +25,7 @@ class CreatePitt(APIView):
 
         try:
             user = request.user
+            my_name = user.username
         except ObjectDoesNotExist:
             return Response({'error': 'User does not exist in a database'}, status=400)
 
@@ -37,11 +39,15 @@ class CreatePitt(APIView):
             if not serializer.is_valid():
                 return Response({'error': serializer.errors})
             else:
+                emails = []
                 people_to_notify = user.get_followers()
-                data = UserSerializer(people_to_notify, many=True)
+                for subs in people_to_notify:
+                    send_pitt_notification.delay(str(my_name), str(subs.username))
+                # data = UserSerializer(people_to_notify, many=True)
+
                 message_instance.save()
-                return Response({'message': 'Your message was uploaded', "info": serializer.data,
-                                 "people that will be notified": data.data}, status=200)
+                return Response({'message': 'Your message was uploaded', "info": serializer.data}, status=200)
+                # "people that will be notified": data.data}, status=200)
 
 
 class DeleteaPitt(APIView):

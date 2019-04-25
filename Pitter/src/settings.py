@@ -1,5 +1,8 @@
 import os
 import datetime
+import sentry_sdk
+from sentry_sdk.integrations.django import DjangoIntegration
+import emailconfig
 
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "settings")
 
@@ -146,8 +149,15 @@ REST_FRAMEWORK = {
 
 AUTH_USER_MODEL = "api.User"
 
-EMAIL_USE_SSL = True
-EMAIL_HOST = 'smtp.mail.ru'
-EMAIL_PORT = 465
-EMAIL_HOST_USER = "test-subscription@mail.ru"
-PASSWORD = "Previous_1347"
+EMAIL_USE_TLS = True
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_HOST_USER = emailconfig.EMAIL_HOST_USER
+EMAIL_HOST_PASSWORD = emailconfig.EMAIL_HOST_PASSWORD
+EMAIL_PORT = 587
+
+
+sentry_sdk.init(
+    dsn="https://fcff3bd74f7045b384aae20943e6d04a@sentry.io/1445996",
+    integrations=[DjangoIntegration()]
+)
+

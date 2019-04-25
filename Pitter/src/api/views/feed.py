@@ -6,17 +6,24 @@ from ..models.message_model import Pitt
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.core.exceptions import ObjectDoesNotExist
 
+PITTS_PER_PAGE=10
 
 class UsersPublicationList(APIView):
     permission_classes = (IsAuthenticated,)
-
     def get(self, request):
         try:
             user = request.user
         except ObjectDoesNotExist:
             return Response({'error': 'User does not exist in a database'}, status=400)
-
         messages = Pitt.objects.filter(user=user)
+        paginator = Paginator(messages, PITTS_PER_PAGE)
+        page = self.request.GET.get('page')
+        try:
+            messages = paginator.page(page)
+        except PageNotAnInteger:
+            messages=paginator.page(1)
+        except EmptyPage:
+            messages=paginator.page(paginator.num_pages)
         ser = ManyPittsSerializer(messages, many=True)
         return Response(ser.data)
 
@@ -33,7 +40,7 @@ class HomePublicationList(APIView):
             return Response({'error': 'User does not exist in a database'}, status=400)
         followed_users = user.get_connections()
         messages = Pitt.objects.filter(user__in=followed_users)
-        paginator = Paginator(messages, 10)
+        paginator = Paginator(messages, PITTS_PER_PAGE)
         page = self.request.GET.get('page')
         try:
             messages = paginator.page(page)
