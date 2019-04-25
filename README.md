@@ -1,1 +1,2 @@
-Enviroment variables: PRIVATE_KEY
+docker-compose build
+docker-compose up
