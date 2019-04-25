@@ -1,9 +1,8 @@
-import logging
 import os
-import sys
 import datetime
-
-import django
+import sentry_sdk
+from sentry_sdk.integrations.django import DjangoIntegration
+import emailconfig
 
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "settings")
 
@@ -126,32 +125,39 @@ API_KEY = 'AIzaSyB0JNTrEhvtwALjuc68NGxXCKMfiBJRVTs'
 API_URL = 'https://speech.googleapis.com/v1/speech:recognize?key={}'.format(API_KEY)
 API_LANGUAGE_CODE = 'ru-RU'
 
+# todo bring back enviroment variable after i stop being lazy
 PUBLIC_KEY = open('public.pem').read()
-PRIVATE_KEY = os.environ.get('PRIVATE_KEY')
+PRIVATE_KEY = open('private.pem').read()
+# PRIVATE_KEY = os.environ.get('PRIVATE_KEY')
 
 JWT_AUTH = {
     'JWT_PUBLIC_KEY': PUBLIC_KEY,
     'JWT_PRIVATE_KEY': PRIVATE_KEY,
-
     'JWT_VERIFY': True,
     'JWT_VERIFY_EXPIRATION': True,
     'JWT_ALGORITHM': 'RS256',
-    'JWT_EXPIRATION_DELTA': datetime.timedelta(seconds=3000),
+    'JWT_EXPIRATION_DELTA': datetime.timedelta(seconds=6000),
     'JWT_AUTH_HEADER_PREFIX': 'Bearer',
-
 }
 
 REST_FRAMEWORK = {
-    'DEFAULT_PERMISSION_CLASSES': [
-        'rest_framework.permissions.IsAuthenticated',
-    ],
     'DEFAULT_AUTHENTICATION_CLASSES': (
-        'rest_framework.authentication.TokenAuthentication',
-    )
+        'rest_framework_jwt.authentication.JSONWebTokenAuthentication',
+
+    ),
 }
 
-EMAIL_USE_SSL = True
-EMAIL_HOST = 'smtp.mail.ru'
-EMAIL_PORT = 465
-EMAIL_HOST_USER = "test-subscription@mail.ru"
-PASSWORD = "Previous_1347"
+AUTH_USER_MODEL = "api.User"
+
+EMAIL_USE_TLS = True
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_HOST_USER = emailconfig.EMAIL_HOST_USER
+EMAIL_HOST_PASSWORD = emailconfig.EMAIL_HOST_PASSWORD
+EMAIL_PORT = 587
+
+
+sentry_sdk.init(
+    dsn="https://fcff3bd74f7045b384aae20943e6d04a@sentry.io/1445996",
+    integrations=[DjangoIntegration()]
+)
+

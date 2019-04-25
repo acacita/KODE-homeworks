@@ -1,22 +1,20 @@
 from rest_framework.views import APIView
-#
 from rest_framework.response import Response
 
 from rest_framework_jwt.settings import api_settings
-#
-from rest_framework.authentication import get_authorization_header
-
+from ..models.user_serializers import UserSerializer
 from rest_framework.permissions import AllowAny
 from rest_framework.permissions import IsAuthenticated
 
 
-class CheckAccess(APIView):
+class UserRetrieveAPIView(APIView):
     permission_classes = (IsAuthenticated,)
+    serializer_class = UserSerializer
 
-    def post(self, request):
-        header = get_authorization_header(request)
-        print(header)
-        return Response('ok you are authorized (not really)')
+    def get(self, request):
+        serializer = self.serializer_class(request.user)
+
+        return Response(serializer.data, status=200)
 
 
 class GetPublicKeyView(APIView):

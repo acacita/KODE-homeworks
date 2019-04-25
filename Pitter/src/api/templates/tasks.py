@@ -20,8 +20,9 @@ def post_subscription_email(user_id=None, subscribers_id=None):
     except User.DoesNotExist:
         logging.warning('Tried to send verification email to non-existing user {}'.format(user_id))
 
+
 @shared_task()
-def send_pitt_notification(user_id, subscribers_id):
+def send_pitt_notification(user_id=None, subscribers_id=None):
     try:
         user = User.objects.get(username=user_id)
         send_mail(
